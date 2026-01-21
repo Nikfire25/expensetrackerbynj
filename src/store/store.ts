@@ -5,7 +5,7 @@ const loadState = () => {
   try {
     const serializedState = localStorage.getItem("transactionsState");
     if (!serializedState) return undefined;
-    return JSON.parse(serializedState);
+    return JSON.parse(serializedState); // This is TransactionState
   } catch (err) {
     console.error("Could not load state", err);
     return undefined;
@@ -21,7 +21,7 @@ const saveState = (state: any) => {
   }
 };
 
-const preloadedState = loadState();
+const preloadedState = loadState() ? { transactions: loadState() } : undefined;
 
 export const store = configureStore({
   reducer: {
@@ -30,8 +30,9 @@ export const store = configureStore({
   preloadedState,
 });
 
-// ✅ Call store.getState() here
-store.subscribe(() => saveState(store.getState()));
+store.subscribe(() => {
+  saveState(store.getState().transactions);
+});
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
