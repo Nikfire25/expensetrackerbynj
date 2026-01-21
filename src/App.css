@@ -1,0 +1,51 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  /* padding: 2rem; */
+  text-align: center;
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  border: 1px solid #000;
+}
+
+.app-title {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* GRID LAYOUT */
+.app-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* ✅ Equal width columns */
+  gap: 2rem;
+}
+
+/* Optional styling */
+.left-col,
+.right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Responsive: stack on small screens */
+@media (max-width: 768px) {
+  .app-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.right-col {
+  position: sticky;
+  top: 20px;
+}
+.app-grid {
+  column-gap: 2rem;
+}
+.right-col {
+  border-left: 1px solid #ddd;
+  padding-left: 2rem;
+}
