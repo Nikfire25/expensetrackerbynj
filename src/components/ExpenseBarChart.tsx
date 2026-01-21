@@ -9,12 +9,13 @@ import {
 
 import { Bar } from "react-chartjs-2";
 import { useSelector } from "react-redux";
+import type { RootState } from "../store/store";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 const ExpenseBarChart = () => {
-  const income = useSelector((state) => state.transactions.income);
-  const expense = useSelector((state) => state.transactions.expense);
+  const income = useSelector((state: RootState) => state.transactions.income);
+  const expense = useSelector((state: RootState) => state.transactions.expense);
   const data = {
     labels: ["income", "expense"],
     datasets: [
