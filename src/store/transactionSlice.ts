@@ -1,9 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-/* =======================
-   Types
-======================= */
-
 export interface Transaction {
   id: string;
   title: string;
