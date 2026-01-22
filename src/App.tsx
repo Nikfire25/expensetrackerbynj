@@ -1,4 +1,3 @@
-import { useState } from "react";
 import "./App.css";
 import TransactionsPage from "./components/TransactionsPage";
 import ProtectedRoute from "./components/ProtectedRoutes";

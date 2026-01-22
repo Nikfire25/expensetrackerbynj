@@ -25,7 +25,7 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await dispatch(loginUser({ email, password })).unwrap();
+      await dispatch(loginUser({ email, password })).unwrap();
       toast.success(`Logged in successfull as ${email}`);
     } catch (error) {
       toast.error("Unable to Login");
