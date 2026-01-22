@@ -1,45 +1,33 @@
 import { useState } from "react";
 import "./App.css";
-import TransactionForm from "./components/TransactionForm";
-import TransactionList from "./components/TransactionList";
-import BalanceSummary from "./components/Balance";
-import ExpenseChart from "./components/ExpenseChart";
-import ExpenseBarChart from "./components/ExpenseBarChart";
-import type { Transaction } from "./store/transactionSlice";
+import TransactionsPage from "./components/TransactionsPage";
+import ProtectedRoute from "./components/ProtectedRoutes";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
-  const [editingTransaction, setEditingTransaction] =
-    useState<Transaction | null>(null);
-
   return (
-    <div className="app-container">
-      <h1 className="app-title">Expense Tracker</h1>
+    <Router>
+      <Routes>
+        {/* Auth Pages */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-      <div className="app-grid">
-        {/* LEFT COLUMN */}
-        <div className="left-col">
-          <BalanceSummary />
-          <TransactionForm
-            editingTransaction={editingTransaction}
-            clearEdit={() => setEditingTransaction(null)}
-          />
-          <TransactionList onEdit={setEditingTransaction} />
-        </div>
+        {/* Protected Transactions Page */}
+        <Route
+          path="/transactions"
+          element={
+            <ProtectedRoute>
+              <TransactionsPage />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* RIGHT COLUMN */}
-        <div
-          className="right-col"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          <ExpenseChart />
-          <ExpenseBarChart />
-        </div>
-      </div>
-    </div>
+        {/* Default route redirects to login */}
+        <Route path="*" element={<Login />} />
+      </Routes>
+    </Router>
   );
 }
 

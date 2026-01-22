@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import type { AppDispatch } from "../store/store";
+import { useSelector, useDispatch } from "react-redux";
+import type { AppDispatch, RootState } from "../store/store";
 import {
-  addTransaction,
-  updateTransaction,
+  // createTransaction,
+  updateTransactionAPI,
+  createTransactionAPI,
   calculateBalance,
-  calculateIncome,
-  calculateExpense,
 } from "../store/transactionSlice";
 import type { Transaction } from "../store/transactionSlice";
 import { PencilSquare, PlusCircle, Eye, EyeSlash } from "react-bootstrap-icons";
@@ -18,23 +17,21 @@ interface Props {
 
 const TransactionForm = ({ editingTransaction, clearEdit }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
+  const { user } = useSelector((state: RootState) => state.auth);
 
-  // ✅ Read from localStorage with fallback
   const [show, setShow] = useState(
     JSON.parse(localStorage.getItem("show") ?? "true"),
   );
-
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [isExpense, setIsExpense] = useState(true);
 
-  // Populate form when editingTransaction changes
   useEffect(() => {
     if (editingTransaction) {
       setTitle(editingTransaction.title);
       setAmount(editingTransaction.amount.toString());
       setIsExpense(editingTransaction.isExpense);
-      setShow(true); // automatically show form when editing
+      setShow(true);
     } else {
       setTitle("");
       setAmount("");
@@ -42,32 +39,37 @@ const TransactionForm = ({ editingTransaction, clearEdit }: Props) => {
     }
   }, [editingTransaction]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return;
 
     const numAmount = Number(amount);
     if (!title || isNaN(numAmount) || numAmount <= 0) return;
 
     if (editingTransaction) {
-      dispatch(
-        updateTransaction({
+      await dispatch(
+        updateTransactionAPI({
           id: editingTransaction.id,
           title,
           amount: numAmount,
           isExpense,
+          userEmail: user.email,
         }),
       );
       clearEdit();
     } else {
-      dispatch(addTransaction({ title, amount: numAmount, isExpense }));
+      await dispatch(
+        createTransactionAPI({
+          title,
+          amount: numAmount,
+          isExpense,
+          userEmail: user.email,
+        }),
+      );
     }
 
-    // Recalculate totals
     dispatch(calculateBalance());
-    dispatch(calculateIncome());
-    dispatch(calculateExpense());
 
-    // Clear form
     setTitle("");
     setAmount("");
     setIsExpense(true);
@@ -80,11 +82,7 @@ const TransactionForm = ({ editingTransaction, clearEdit }: Props) => {
   };
 
   return (
-    <div
-      className="mb-2 position-relative"
-      style={{ height: "100%", width: "100%" }}
-    >
-      {/* Top-right toggle button */}
+    <div className="mb-2 position-relative" style={{ width: "100%" }}>
       <div className="d-flex justify-content-end mb-1">
         <button
           className="btn btn-outline-primary"
@@ -96,59 +94,68 @@ const TransactionForm = ({ editingTransaction, clearEdit }: Props) => {
         </button>
       </div>
 
-      {show && (
-        <form
-          className="card p-4 shadow-sm"
-          onSubmit={handleSubmit}
-          style={{ minWidth: "350px" }}
-        >
-          <h5 className="card-title mb-3 d-flex align-items-center">
-            {editingTransaction ? (
-              <>
-                <PencilSquare className="me-2 text-warning" /> Edit Transaction
-              </>
-            ) : (
-              <>
-                <PlusCircle className="me-2 text-success" /> Add Transaction
-              </>
-            )}
-          </h5>
+      <div
+        style={{
+          transition: "all 0.3s ease",
+          maxHeight: show ? "1000px" : "0px",
+          overflow: "hidden",
+        }}
+      >
+        {show && (
+          <form
+            className="card p-4 shadow-sm"
+            onSubmit={handleSubmit}
+            style={{ minWidth: "350px" }}
+          >
+            <h5 className="card-title mb-3 d-flex align-items-center">
+              {editingTransaction ? (
+                <>
+                  <PencilSquare className="me-2 text-warning" /> Edit
+                  Transaction
+                </>
+              ) : (
+                <>
+                  <PlusCircle className="me-2 text-success" /> Add Transaction
+                </>
+              )}
+            </h5>
 
-          <input
-            type="text"
-            className="form-control mb-2"
-            placeholder="Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-          <input
-            type="number"
-            className="form-control mb-2"
-            placeholder="Amount"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            required
-          />
-
-          <div className="form-check mb-3">
             <input
-              className="form-check-input"
-              type="checkbox"
-              checked={isExpense}
-              onChange={(e) => setIsExpense(e.target.checked)}
-              id="isExpenseCheck"
+              type="text"
+              className="form-control mb-2"
+              placeholder="Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
             />
-            <label className="form-check-label" htmlFor="isExpenseCheck">
-              Is Expense
-            </label>
-          </div>
+            <input
+              type="number"
+              className="form-control mb-2"
+              placeholder="Amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              required
+            />
 
-          <button className="btn btn-primary w-100">
-            {editingTransaction ? "Update Transaction" : "Add Transaction"}
-          </button>
-        </form>
-      )}
+            <div className="form-check mb-3">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                checked={isExpense}
+                onChange={(e) => setIsExpense(e.target.checked)}
+                id="isExpenseCheck"
+              />
+              <label className="form-check-label" htmlFor="isExpenseCheck">
+                Is Expense
+              </label>
+            </div>
+
+            <button className="btn btn-primary w-100">
+              {editingTransaction ? "Update Transaction" : "Add Transaction"}
+            </button>
+          </form>
+        )}
+      </div>
     </div>
   );
 };

@@ -19,12 +19,14 @@ const BalanceSummary = () => {
                 : "text-secondary"
           }
         >
-          ₹{balance}
+          ₹{balance.toLocaleString()}
         </span>
       </h4>
       <div className="d-flex justify-content-between">
-        <span className="text-success">Income: ₹{income}</span>
-        <span className="text-danger">Expense: ₹{expense}</span>
+        <span className="text-success">Income: ₹{income.toLocaleString()}</span>
+        <span className="text-danger">
+          Expense: ₹{expense.toLocaleString()}
+        </span>
       </div>
     </div>
   );
