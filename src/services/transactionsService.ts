@@ -5,7 +5,7 @@ import type {
   TransactionPayload,
 } from "../store/transactionSlice";
 
-const API_URL = "https://expensetrackerbynjbackend.onrender.com/transactions"; // your JSON server endpoint
+const API_URL = `${import.meta.env.VITE_API_URL}/transactions`; // your JSON server endpoint
 
 export const transactionsService = {
   getTransactions: async (token: string) => {
