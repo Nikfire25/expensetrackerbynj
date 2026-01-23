@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../store/store";
 
 interface Props {
-  children: React.FC;
+  children: JSX.Element;
 }
 
 const ProtectedRoute = ({ children }: Props) => {
