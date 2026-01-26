@@ -51,7 +51,7 @@ const TransactionsPage = () => {
 
       {/* USER INFO BELOW */}
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h4>Hi {user && getNameFromEmail(user.email)}</h4>
+        <h4>Hello {user && getNameFromEmail(user.email)}</h4>
         <button className="btn btn-outline-danger" onClick={handleLogout}>
           Logout
         </button>
